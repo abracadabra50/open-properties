@@ -12,13 +12,6 @@ from ..locations import resolve
 from ..schema import normalise_listing, parse_price, utc_now_iso
 from .base import PortalAdapter, SearchConfig
 
-BAD_AREAS = ["Moredun", "Niddrie", "Wester Hailes", "Sighthill", "Muirhouse", "Pilton", "Kirkliston", "Musselburgh", "Dalkeith", "Granton", "Liberton"]
-
-
-def is_bad_area(address: str) -> bool:
-    return any(bad.lower() in address.lower() for bad in BAD_AREAS)
-
-
 def categorize(price: int, beds: int) -> str:
     if price and price < 250000:
         return "investment"
@@ -55,8 +48,6 @@ class ESPCAdapter(PortalAdapter):
             address_slug = url_match.group(2).split('/')[0]
             address = address_slug.replace('-', ' ').title()
             address = re.sub(r' Eh(\d+)', r', EH\1', address)
-            if is_bad_area(address):
-                continue
 
             price = 0
             price_text = "Price on application"

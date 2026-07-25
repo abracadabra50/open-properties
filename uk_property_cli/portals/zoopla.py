@@ -13,13 +13,6 @@ from ..locations import resolve
 from ..schema import normalise_listing, parse_price, utc_now_iso
 from .base import PortalAdapter, SearchConfig
 
-BAD_AREAS = ["Moredun", "Niddrie", "Wester Hailes", "Sighthill", "Muirhouse", "Pilton", "Kirkliston", "Musselburgh", "Dalkeith", "Granton", "Liberton"]
-
-
-def is_bad_area(address: str) -> bool:
-    return any(bad.lower() in address.lower() for bad in BAD_AREAS)
-
-
 def categorize(price: int, beds: int) -> str:
     if price and price < 250000:
         return "investment"
@@ -47,8 +40,6 @@ class ZooplaAdapter(PortalAdapter):
         properties = []
         property_pattern = r'\[£([\d,]+).*?(\d+)\s+beds?.*?(\d+)\s+baths?.*?\n(.*?)\n(.*?)\]'
         for price_text, beds, baths, address, description in re.findall(property_pattern, markdown, re.DOTALL | re.IGNORECASE):
-            if is_bad_area(address):
-                continue
             price = parse_price(price_text)
             pc_match = re.search(r'(EH\d+\s*\d*\w*)', address.upper())
             prop_id = str(abs(hash(address)) % 100000000)

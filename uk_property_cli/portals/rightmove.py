@@ -12,13 +12,6 @@ from ..locations import resolve
 from ..schema import normalise_listing, utc_now_iso
 from .base import PortalAdapter, SearchConfig
 
-BAD_AREAS = ["Moredun", "Niddrie", "Wester Hailes", "Sighthill", "Muirhouse", "Pilton", "Granton"]
-
-
-def is_bad_area(address: str) -> bool:
-    return any(bad.lower() in address.lower() for bad in BAD_AREAS)
-
-
 def categorize(price: int, beds: int) -> str:
     if price and price < 250000:
         return "investment"
@@ -66,8 +59,6 @@ class RightmoveAdapter(PortalAdapter):
 
     def parse_property(self, prop: Dict[str, Any], fetch_url: str, location_id: str) -> Optional[Dict[str, Any]]:
         address = prop.get("displayAddress", "")
-        if is_bad_area(address):
-            return None
 
         price_data = prop.get("price") or {}
         price = price_data.get("amount", 0) or 0
