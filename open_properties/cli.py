@@ -19,7 +19,7 @@ from .providers import ADAPTERS, PROVIDERS, list_providers, provider_ids_for, va
 from .schema import utc_now_iso
 from .scoring import rank_properties
 
-COUNTRY_DEFAULT_LOCATIONS = {"GB": "edinburgh", "IE": "dublin", "AU": "sydney", "ES": "madrid", "IT": "rome", "PT": "lisbon"}
+COUNTRY_DEFAULT_LOCATIONS = {"GB": "edinburgh", "IE": "dublin", "AU": "sydney", "ES": "madrid", "IT": "rome", "PT": "lisbon", "US": "austin", "CA": "toronto", "DE": "berlin"}
 
 
 def _int_or_none(value: Any) -> Optional[int]:
@@ -39,6 +39,8 @@ def build_search_config(args: argparse.Namespace, profile: Dict[str, Any]) -> Se
         max_beds=_int_or_none(args.max_beds if args.max_beds is not None else search.get("max_beds")),
         min_baths=_int_or_none(args.min_baths if args.min_baths is not None else search.get("min_baths")),
         max_baths=_int_or_none(args.max_baths if args.max_baths is not None else search.get("max_baths")),
+        min_rooms=float(args.min_rooms) if args.min_rooms is not None else None,
+        max_rooms=float(args.max_rooms) if args.max_rooms is not None else None,
         min_price=str(args.min_price if args.min_price is not None else (search.get("min_price") or "")),
         max_price=str(args.max_price if args.max_price is not None else (search.get("max_price") or "")),
         property_types=args.property_types or ",".join(search.get("property_types") or []),
@@ -162,7 +164,7 @@ def command_health(args: argparse.Namespace) -> None:
 def add_search_arguments(search: argparse.ArgumentParser) -> None:
     search.add_argument("--provider", choices=["all", *PROVIDERS], default=None)
     search.add_argument("--portal", choices=["all", *PROVIDERS], help=argparse.SUPPRESS)
-    search.add_argument("--country", default=None, help="ISO country code, e.g. GB, IE, AU, ES")
+    search.add_argument("--country", default=None, help="ISO country code, e.g. GB, US, CA, DE")
     search.add_argument("--transaction", choices=["sale", "rent"], default=None)
     search.add_argument("--profile", help="Profile name/path from profiles/*.json")
     search.add_argument("--location", default=None, help="City, area or suburb")
@@ -174,6 +176,8 @@ def add_search_arguments(search: argparse.ArgumentParser) -> None:
     search.add_argument("--max-beds", type=int)
     search.add_argument("--min-baths", type=int)
     search.add_argument("--max-baths", type=int)
+    search.add_argument("--min-rooms", type=float, help="Minimum rooms (used by markets such as Germany)")
+    search.add_argument("--max-rooms", type=float, help="Maximum rooms")
     search.add_argument("--min-price", type=int)
     search.add_argument("--max-price", type=int)
     search.add_argument("--property-types", default="")

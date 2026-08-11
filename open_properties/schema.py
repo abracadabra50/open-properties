@@ -55,7 +55,8 @@ class PropertyListing:
     price_text: str = "Price on application"
     price_period: str = ""
     beds: int = 0
-    baths: int = 0
+    baths: float = 0
+    rooms: Optional[float] = None
     title: str = "Property"
     property_type: str = "property"
     area: str = ""
@@ -91,7 +92,7 @@ class PropertyListing:
         currency = clean_text(data.get("currency") or COUNTRY_CURRENCIES.get(country, "GBP")).upper()
         price = parse_price(data.get("price", 0))
         beds = int(data.get("beds") or 0)
-        baths = int(data.get("baths") or 0)
+        baths = _number(data.get("baths"))
         address = clean_text(data.get("address", ""))
         portal = clean_text(data.get("portal", "unknown")).lower()
         listing_id = clean_text(data.get("id") or data.get("listing_id") or data.get("url") or address)
@@ -110,6 +111,7 @@ class PropertyListing:
             price_period=clean_text(data.get("price_period", "")),
             beds=beds,
             baths=baths,
+            rooms=_float_or_none(data.get("rooms")),
             title=title,
             property_type=clean_text(data.get("property_type") or "property").lower(),
             area=clean_text(data.get("area", "")),
@@ -130,6 +132,13 @@ class PropertyListing:
             confidence=data.get("confidence"),
             schema_version=data.get("schema_version", SCHEMA_VERSION),
         )
+
+
+def _number(value: Any) -> Any:
+    number = _float_or_none(value)
+    if number is None:
+        return 0
+    return int(number) if number.is_integer() else number
 
 
 def _float_or_none(value: Any) -> Optional[float]:

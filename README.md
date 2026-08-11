@@ -4,18 +4,19 @@
 
 ### One command line for the world's property portals
 
-**Search homes for sale or rent, normalize every listing, deduplicate portals and track changes —<br>across six countries. Built for AI agents.**
+**Search real homes at real prices, normalize every listing, deduplicate portals and track changes —<br>across nine providers in nine countries. Built for AI agents.**
 
 <br>
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Countries](https://img.shields.io/badge/countries-6-2ea44f)](#what-works-where)
-[![Providers](https://img.shields.io/badge/providers-6-2ea44f)](#what-works-where)
-[![Dependencies](https://img.shields.io/badge/runtime_dependencies-0-orange)](#install)
+[![Countries](https://img.shields.io/badge/countries-9-2ea44f)](#what-works-where)
+[![Providers](https://img.shields.io/badge/providers-9-2ea44f)](#what-works-where)
+[![No credentials](https://img.shields.io/badge/3%20of%209%20countries-no%20credentials-orange)](#what-works-where)
 [![CI](https://github.com/abracadabra50/open-properties/actions/workflows/ci.yml/badge.svg)](https://github.com/abracadabra50/open-properties/actions/workflows/ci.yml)
 [![MCP](https://img.shields.io/badge/MCP-6%20tools-6E56CF)](#cli-mcp-or-skill)
+[![Stars](https://img.shields.io/github/stars/abracadabra50/open-properties?style=flat&color=yellow)](https://github.com/abracadabra50/open-properties/stargazers)
 
-🇬🇧 &nbsp;🇮🇪 &nbsp;🇦🇺 &nbsp;🇪🇸 &nbsp;🇮🇹 &nbsp;🇵🇹 &nbsp;&nbsp;·&nbsp;&nbsp; [**your country next?**](#add-your-property-portal)
+🇬🇧 &nbsp;🇮🇪 &nbsp;🇺🇸 &nbsp;🇨🇦 &nbsp;🇩🇪 &nbsp;🇦🇺 &nbsp;🇪🇸 &nbsp;🇮🇹 &nbsp;🇵🇹 &nbsp;&nbsp;·&nbsp;&nbsp; [**your country next?**](#add-your-property-portal)
 
 </div>
 
@@ -37,11 +38,17 @@ $ property search --country IE --provider daft --location dublin-city --min-beds
   ]
 }
 
-$ property search --country GB --provider rightmove --location edinburgh --min-beds 2 --max-price 300000
-$ property search --country ES --provider idealista --location madrid --transaction rent
+$ property search --country DE --provider immoscout24 --location berlin --transaction rent --min-rooms 2 --max-price 2000
+{
+  "count": 50,
+  "properties": [{"address": "Biedenkopfer Straße 52, 13507 Berlin", "price": 1335, "rooms": 2, "floor_area_sqm": 58}]
+}
+
+$ property search --country US --provider rentcast --location 'Austin, TX' --min-beds 3
+$ property search --country CA --provider crea-ddf --location Toronto --transaction rent
 ```
 
-UK and Ireland search need no account or API key. Australia uses Domain's official developer API. Spain, Italy and Portugal use Idealista's official API.
+**Three countries need no credentials at all.** Rightmove, Daft.ie and ImmoScout24 answer an anonymous request. US, Canada, Australia, Spain, Italy and Portugal use declared first-party or specialist property-data credentials rather than hidden scraping proxies.
 
 ---
 
@@ -93,10 +100,13 @@ The provider registry is the source of truth. `property providers` prints this t
 | ESPC | 🇬🇧 GB | ✓ | — | no credentials | live |
 | Zoopla | 🇬🇧 GB | ✓ | ✓ | Firecrawl | optional |
 | Daft.ie | 🇮🇪 IE | ✓ | ✓ | no credentials | **live verified** |
+| ImmoScout24 | 🇩🇪 DE | ✓ | ✓ | no credentials | **live verified** |
+| RentCast | 🇺🇸 US | ✓ | ✓ | self-serve API key | official nationwide API |
+| REALTOR.ca DDF | 🇨🇦 CA | ✓ | ✓ | active CREA DDF feed | official CREA API |
 | Domain | 🇦🇺 AU | ✓ | ✓ | official API credentials | implemented from official API |
 | Idealista | 🇪🇸 ES · 🇮🇹 IT · 🇵🇹 PT | ✓ | ✓ | official API credentials | implemented from official API |
 
-Rightmove and Daft were exercised against their live storefronts during the international rebuild. Credentialed providers have fixture-tested normalization and return an explicit setup error when credentials are missing; they do not silently return an empty market.
+Rightmove, Daft and ImmoScout24 are exercised against live inventory. Credentialed providers have fixture-tested normalization and return an explicit setup error when credentials are missing; they do not silently turn missing access into an empty market.
 
 ## Search
 
@@ -125,6 +135,18 @@ property search --country GB --provider rightmove --location london --transactio
 
 # Ireland
 property search --country IE --provider daft --location cork-city --max-price 450000
+
+# United States — RentCast covers all 50 states
+export RENTCAST_API_KEY=...
+property search --country US --provider rentcast --location 'Austin, TX' --min-beds 3
+
+# Canada — official REALTOR.ca DDF feed
+export CREA_DDF_CLIENT_ID=...
+export CREA_DDF_CLIENT_SECRET=...
+property search --country CA --provider crea-ddf --location Toronto --transaction rent
+
+# Germany — anonymous mobile search, room count rather than bedrooms
+property search --country DE --provider immoscout24 --location berlin --transaction rent --min-rooms 2
 
 # Australia — Sydney maps to NSW automatically
 export DOMAIN_CLIENT_ID=...
@@ -171,7 +193,7 @@ Every provider returns `property-listing.v1`:
 }
 ```
 
-Optional fields cover rental periods, floor/land area, listing dates, postal codes and provider-specific provenance. Raw provider payloads are not dumped into agent context.
+Optional fields cover rental periods, room count, floor/land area, listing dates, postal codes and provider-specific provenance. `beds` and `rooms` stay separate because a German *Zimmer* is not a bedroom. Raw provider payloads are not dumped into agent context.
 
 ## Dedupe, filter and track changes
 

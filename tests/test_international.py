@@ -6,9 +6,12 @@ from open_properties.cli import build_parser
 from open_properties.dedupe import match_confidence, merge_property_data
 from open_properties.locations import resolve
 from open_properties.portals.base import SearchConfig
+from open_properties.portals.crea import CREAAdapter
 from open_properties.portals.daft import DaftAdapter
 from open_properties.portals.domain import DomainAdapter
 from open_properties.portals.idealista import IdealistaAdapter
+from open_properties.portals.immoscout24 import ImmoScout24Adapter
+from open_properties.portals.rentcast import RentCastAdapter
 from open_properties.providers import list_providers, provider_ids_for
 
 
@@ -17,6 +20,9 @@ class InternationalProviderTests(unittest.TestCase):
         self.assertEqual(provider_ids_for("IE", "sale"), ["daft"])
         self.assertEqual(provider_ids_for("AU", "rent"), ["domain"])
         self.assertIn("idealista", provider_ids_for("ES", "sale"))
+        self.assertEqual(provider_ids_for("US", "sale"), ["rentcast"])
+        self.assertEqual(provider_ids_for("CA", "rent"), ["crea-ddf"])
+        self.assertEqual(provider_ids_for("DE", "sale"), ["immoscout24"])
         self.assertEqual({row["id"] for row in list_providers("GB")}, {"rightmove", "espc", "zoopla"})
 
     def test_location_resolver_supports_international_ids(self):
@@ -61,6 +67,52 @@ class InternationalProviderTests(unittest.TestCase):
         }, "ES", "sale")
         self.assertEqual(listing["country"], "ES")
         self.assertEqual(listing["floor_area_sqm"], 70.0)
+
+    def test_rentcast_us_mapping_preserves_half_baths_and_converts_area(self):
+        adapter = RentCastAdapter()
+        config = SearchConfig(country="US", transaction="sale", location="Austin, TX", min_beds=2, max_price="900000")
+        url = adapter.build_url(config)
+        self.assertIn("city=Austin", url)
+        self.assertIn("state=TX", url)
+        listing = adapter.parse_listing({
+            "id": "1-Test-St,-Austin,-TX-78701", "formattedAddress": "1 Test St, Austin, TX 78701",
+            "city": "Austin", "state": "TX", "zipCode": "78701", "price": 899000,
+            "bedrooms": 3, "bathrooms": 2.5, "squareFootage": 1000, "propertyType": "Single Family",
+        }, "sale")
+        self.assertEqual(listing["country"], "US")
+        self.assertEqual(listing["baths"], 2.5)
+        self.assertAlmostEqual(listing["floor_area_sqm"], 92.90304)
+
+    def test_crea_canada_odata_and_mapping(self):
+        adapter = CREAAdapter()
+        url = adapter.build_url(SearchConfig(country="CA", transaction="rent", location="Toronto", min_beds=2))
+        self.assertIn("LeaseAmount+gt+0", url)
+        listing = adapter.parse_listing({
+            "ListingKey": "ca1", "ListingURL": "https://www.realtor.ca/real-estate/ca1/test",
+            "UnparsedAddress": "1 Test Street, Toronto, ON", "City": "Toronto", "PostalCode": "M5V 1A1",
+            "LeaseAmount": 3200, "LeaseAmountFrequency": "Monthly", "BedroomsTotal": 2,
+            "BathroomsTotalInteger": 2, "PropertySubType": "Condo", "BuildingAreaTotal": 1000,
+            "BuildingAreaUnits": "Square Feet", "Media": [{"MediaURL": "https://img.example/ca.jpg"}],
+        }, "rent")
+        self.assertEqual(listing["country"], "CA")
+        self.assertEqual(listing["currency"], "CAD")
+        self.assertEqual(listing["price_period"], "monthly")
+        self.assertAlmostEqual(listing["floor_area_sqm"], 92.90304)
+
+    def test_immoscout_germany_mobile_mapping(self):
+        adapter = ImmoScout24Adapter()
+        config = SearchConfig(country="DE", transaction="rent", location="berlin", min_rooms=2, max_price="2000")
+        self.assertIn("realestatetype=apartmentrent", adapter.build_url(config))
+        listing = adapter.parse_listing({
+            "id": "123", "title": "Wohnung in Berlin", "realEstateType": "apartmentrent",
+            "address": {"line": "Teststraße 1, 10115 Berlin", "lat": 52.5, "lon": 13.4},
+            "attributes": [{"value": "1.250 €"}, {"value": "72,5 m²"}, {"value": "2,5 Zi."}],
+            "titlePicture": {"full": "https://img.example/de.jpg"},
+        }, "rent", "https://api.example/search")
+        self.assertEqual(listing["country"], "DE")
+        self.assertEqual(listing["price"], 1250)
+        self.assertEqual(listing["rooms"], 2.5)
+        self.assertEqual(listing["postcode"], "10115")
 
     def test_dedupe_never_merges_countries_or_currencies(self):
         a = {"portal": "a", "id": "1", "address": "1 High Street", "country": "GB", "currency": "GBP", "price": 100, "beds": 1}

@@ -6,10 +6,13 @@ from dataclasses import asdict, dataclass
 from typing import Dict, List, Tuple, Type
 
 from .portals.base import PortalAdapter
+from .portals.crea import CREAAdapter
 from .portals.daft import DaftAdapter
 from .portals.domain import DomainAdapter
 from .portals.espc import ESPCAdapter
 from .portals.idealista import IdealistaAdapter
+from .portals.immoscout24 import ImmoScout24Adapter
+from .portals.rentcast import RentCastAdapter
 from .portals.rightmove import RightmoveAdapter
 from .portals.zoopla import ZooplaAdapter
 
@@ -40,6 +43,9 @@ PROVIDERS: Dict[str, ProviderInfo] = {
     "daft": ProviderInfo("daft", "Daft.ie", ("IE",), ("sale", "rent"), "none", "live", "Anonymous web JSON API", DaftAdapter),
     "domain": ProviderInfo("domain", "Domain", ("AU",), ("sale", "rent"), "client credentials", "official", "Official developer API; DOMAIN_CLIENT_ID and DOMAIN_CLIENT_SECRET", DomainAdapter),
     "idealista": ProviderInfo("idealista", "Idealista", ("ES", "IT", "PT"), ("sale", "rent"), "client credentials", "official", "Official API; IDEALISTA_API_KEY and IDEALISTA_API_SECRET", IdealistaAdapter),
+    "rentcast": ProviderInfo("rentcast", "RentCast", ("US",), ("sale", "rent"), "API key", "official", "Nationwide listings API; self-serve RENTCAST_API_KEY", RentCastAdapter),
+    "crea-ddf": ProviderInfo("crea-ddf", "REALTOR.ca DDF", ("CA",), ("sale", "rent"), "data-feed credentials", "official", "Official CREA DDF API; requires an active DDF feed", CREAAdapter),
+    "immoscout24": ProviderInfo("immoscout24", "ImmoScout24", ("DE",), ("sale", "rent"), "none", "live", "Anonymous mobile search API; no key", ImmoScout24Adapter),
 }
 
 ADAPTERS = {provider_id: info.adapter for provider_id, info in PROVIDERS.items()}

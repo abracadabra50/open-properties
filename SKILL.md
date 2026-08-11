@@ -1,6 +1,6 @@
 ---
 name: open-properties
-description: Search and monitor property listings around the world through one normalized CLI/MCP interface. Supports Rightmove, ESPC, Zoopla, Daft.ie, Domain and Idealista across GB, IE, AU, ES, IT and PT; deduplicates providers, filters criteria and compares snapshots. Use for home searches, property acquisition scans, listing alerts, portal comparisons or agent workflows over real-estate data.
+description: Search and monitor property listings around the world through one normalized CLI/MCP interface. Supports 9 providers across GB, IE, US, CA, DE, AU, ES, IT and PT, including Rightmove, Daft.ie, ImmoScout24, RentCast, REALTOR.ca DDF, Domain and Idealista. Use for home searches, acquisition scans, listing alerts, portal comparisons, deduplication or property-agent workflows.
 ---
 
 # open-properties — agent skill
@@ -30,6 +30,9 @@ Use `property` when installed. From the repository use `python3 -m open_properti
 |---|---|---|
 | GB | rightmove; espc in Edinburgh/Lothians | Zoopla is optional via Firecrawl |
 | IE | daft | no credentials |
+| US | rentcast | self-serve API key; all 50 states |
+| CA | crea-ddf | active official REALTOR.ca DDF feed |
+| DE | immoscout24 | no credentials; use rooms rather than bedrooms |
 | AU | domain | requires official API credentials |
 | ES, IT, PT | idealista | requires official API credentials and coordinates/radius |
 
@@ -40,6 +43,9 @@ Use `property` when installed. From the repository use `python3 -m open_properti
 ```bash
 # Search sale or rental inventory
 property search --country GB --provider rightmove --location london --transaction rent --min-beds 2
+property search --country US --provider rentcast --location 'Austin, TX' --min-beds 3
+property search --country CA --provider crea-ddf --location Toronto --transaction rent
+property search --country DE --provider immoscout24 --location berlin --min-rooms 2
 
 # Resolve known provider IDs/coordinates
 property locations madrid --country ES

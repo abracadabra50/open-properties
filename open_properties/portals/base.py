@@ -14,6 +14,8 @@ class SearchConfig:
     max_beds: Optional[int] = None
     min_baths: Optional[int] = None
     max_baths: Optional[int] = None
+    min_rooms: Optional[float] = None
+    max_rooms: Optional[float] = None
     min_price: str = ""
     max_price: str = ""
     property_types: str = ""

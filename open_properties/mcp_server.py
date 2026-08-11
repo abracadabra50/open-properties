@@ -18,7 +18,7 @@ from .schema import utc_now_iso
 from .scoring import rank_properties
 
 JsonDict = Dict[str, Any]
-COUNTRY_DEFAULT_LOCATIONS = {"GB": "edinburgh", "IE": "dublin", "AU": "sydney", "ES": "madrid", "IT": "rome", "PT": "lisbon"}
+COUNTRY_DEFAULT_LOCATIONS = {"GB": "edinburgh", "IE": "dublin", "AU": "sydney", "ES": "madrid", "IT": "rome", "PT": "lisbon", "US": "austin", "CA": "toronto", "DE": "berlin"}
 
 
 def _int_or_none(value: Any) -> Optional[int]:
@@ -43,7 +43,8 @@ def search_properties(arguments: JsonDict) -> JsonDict:
         transaction=arguments.get("transaction") or search.get("transaction") or "sale",
         min_beds=int(arguments.get("min_beds") if arguments.get("min_beds") is not None else (search.get("min_beds") or 1)),
         max_beds=_int_or_none(arguments.get("max_beds")), min_baths=_int_or_none(arguments.get("min_baths")),
-        max_baths=_int_or_none(arguments.get("max_baths")), min_price=str(arguments.get("min_price") or ""),
+        max_baths=_int_or_none(arguments.get("max_baths")), min_rooms=float(arguments["min_rooms"]) if arguments.get("min_rooms") is not None else None,
+        max_rooms=float(arguments["max_rooms"]) if arguments.get("max_rooms") is not None else None, min_price=str(arguments.get("min_price") or ""),
         max_price=str(arguments.get("max_price") or search.get("max_price") or ""),
         property_types=arguments.get("property_types") or ",".join(search.get("property_types") or []),
         location=arguments.get("location") or profile_location or COUNTRY_DEFAULT_LOCATIONS.get(country, ""),
@@ -137,7 +138,8 @@ SEARCH_SCHEMA = {
         "transaction": {"type": "string", "enum": ["sale", "rent"], "default": "sale"},
         "location": {"type": "string"}, "location_id": {"type": "string"}, "state": {"type": "string"},
         "min_beds": {"type": "integer"}, "max_beds": {"type": "integer"}, "min_baths": {"type": "integer"},
-        "max_baths": {"type": "integer"}, "min_price": {"type": "integer"}, "max_price": {"type": "integer"},
+        "max_baths": {"type": "integer"}, "min_rooms": {"type": "number"}, "max_rooms": {"type": "number"},
+        "min_price": {"type": "integer"}, "max_price": {"type": "integer"},
         "property_types": {"type": "string"}, "max_pages": {"type": "integer", "default": 3},
         "dedupe": {"type": "boolean"}, "apply_filters": {"type": "boolean"}, "areas": {"type": "string"},
         "exclude": {"type": "string"}, "explain": {"type": "boolean"}, "rank": {"type": "boolean"}, "profile": {"type": "string"},

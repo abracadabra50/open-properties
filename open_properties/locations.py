@@ -20,6 +20,13 @@ DAFT_LOCATIONS = {
     "cork-city": "35", "galway": "19", "galway-city": "34",
     "limerick": "17", "limerick-city": "37", "waterford": "12", "waterford-city": "38",
 }
+IMMOSCOUT_LOCATIONS = {
+    "berlin": "/de/berlin/berlin", "hamburg": "/de/hamburg/hamburg",
+    "munich": "/de/bayern/muenchen", "muenchen": "/de/bayern/muenchen",
+    "frankfurt": "/de/hessen/frankfurt-am-main", "cologne": "/de/nordrhein-westfalen/koeln",
+    "koeln": "/de/nordrhein-westfalen/koeln", "dusseldorf": "/de/nordrhein-westfalen/duesseldorf",
+    "duesseldorf": "/de/nordrhein-westfalen/duesseldorf", "stuttgart": "/de/baden-wuerttemberg/stuttgart",
+}
 IDEALISTA_LOCATIONS = {
     "madrid": "40.4168,-3.7038", "barcelona": "41.3874,2.1686",
     "valencia": "39.4699,-0.3763", "seville": "37.3891,-5.9845",
@@ -30,7 +37,7 @@ IDEALISTA_LOCATIONS = {
 PROVIDER_LOCATIONS: Dict[str, Dict[str, str]] = {
     "rightmove": RIGHTMOVE_LOCATIONS, "espc": ESPC_LOCATIONS,
     "zoopla": ZOOPLA_LOCATIONS, "daft": DAFT_LOCATIONS,
-    "idealista": IDEALISTA_LOCATIONS,
+    "idealista": IDEALISTA_LOCATIONS, "immoscout24": IMMOSCOUT_LOCATIONS,
 }
 
 
@@ -52,7 +59,7 @@ def find(query: str = "", country: str = "") -> List[Dict[str, str]]:
     q = normalise_location(query)
     country = country.upper()
     provider_countries = {
-        "rightmove": "GB", "espc": "GB", "zoopla": "GB", "daft": "IE", "idealista": "ES,IT,PT",
+        "rightmove": "GB", "espc": "GB", "zoopla": "GB", "daft": "IE", "idealista": "ES,IT,PT", "immoscout24": "DE",
     }
     rows = []
     for provider, mapping in PROVIDER_LOCATIONS.items():
