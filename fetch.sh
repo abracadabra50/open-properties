@@ -1,5 +1,5 @@
 #!/bin/bash
-# Backward-compatible dispatcher. Prefer: uk-property <command>
+# Backward-compatible UK dispatcher. Prefer: property <command>
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,8 +19,8 @@ USAGE:
   ./fetch.sh filter <file> [opts]
   ./fetch.sh compare <old> <new>
 
-Prefer the new CLI:
-  python3 -m uk_property_cli.cli search --portal rightmove --min-beds 2 --location edinburgh
+Prefer the international CLI:
+  python3 -m open_properties.cli search --country GB --provider rightmove --min-beds 2 --location edinburgh
   uk-property search --profile edinburgh-brrr --apply-filters --rank
 USAGE
   exit 1

@@ -1,10 +1,3 @@
-from .base import SearchConfig
-from .rightmove import RightmoveAdapter
-from .espc import ESPCAdapter
-from .zoopla import ZooplaAdapter
-
-ADAPTERS = {
-    "rightmove": RightmoveAdapter,
-    "espc": ESPCAdapter,
-    "zoopla": ZooplaAdapter,
-}
+"""Compatibility provider exports."""
+from open_properties.portals import *  # noqa: F401,F403
+from open_properties.providers import ADAPTERS

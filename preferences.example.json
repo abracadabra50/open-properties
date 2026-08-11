@@ -1,0 +1,26 @@
+{
+  "name": "example-search",
+  "search": {
+    "country": "IE",
+    "transaction": "sale",
+    "location": "dublin-city",
+    "min_beds": 2,
+    "max_price": 600000,
+    "property_types": ["apartment", "house"]
+  },
+  "areas": {
+    "desired": [],
+    "excluded": [],
+    "premium": []
+  },
+  "deduplication": {
+    "enabled": true,
+    "threshold": 0.88,
+    "candidate_threshold": 0.72
+  },
+  "scoring": {
+    "enabled": false,
+    "prefer_images": true,
+    "prefer_multiple_portals": true
+  }
+}

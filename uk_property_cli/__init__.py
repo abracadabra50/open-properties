@@ -1,3 +1,2 @@
-"""UK Property CLI package."""
-
-__version__ = "0.2.0"
+"""Compatibility package for the former uk-property-cli name."""
+from open_properties import __version__

@@ -2,16 +2,16 @@ import json
 import unittest
 from pathlib import Path
 
-from uk_property_cli.compare import compare_snapshots
+from open_properties.compare import compare_snapshots
 from tempfile import TemporaryDirectory
 
-from uk_property_cli.config import load_profile
-from uk_property_cli.dedupe import deduplicate_with_report, match_confidence
-from uk_property_cli.filters import filter_properties_with_reasons
-from uk_property_cli.locations import find, resolve
-from uk_property_cli.portals.base import SearchConfig
-from uk_property_cli.portals.rightmove import RightmoveAdapter
-from uk_property_cli.schema import normalise_listing
+from open_properties.config import load_profile
+from open_properties.dedupe import deduplicate_with_report, match_confidence
+from open_properties.filters import filter_properties_with_reasons
+from open_properties.locations import find, resolve
+from open_properties.portals.base import SearchConfig
+from open_properties.portals.rightmove import RightmoveAdapter
+from open_properties.schema import normalise_listing
 
 
 class PackageBehaviourTests(unittest.TestCase):
@@ -39,7 +39,7 @@ class PackageBehaviourTests(unittest.TestCase):
 
 
     def test_espc_fixture_parse(self):
-        from uk_property_cli.portals.espc import ESPCAdapter
+        from open_properties.portals.espc import ESPCAdapter
         html = Path("tests/fixtures/espc_sample.html").read_text()
         adapter = ESPCAdapter()
         props = adapter.parse_properties(html, SearchConfig(min_beds=1), "https://fetch.example")
@@ -48,7 +48,7 @@ class PackageBehaviourTests(unittest.TestCase):
         self.assertEqual(props[0]["price"], 210000)
 
     def test_zoopla_fixture_parse(self):
-        from uk_property_cli.portals.zoopla import ZooplaAdapter
+        from open_properties.portals.zoopla import ZooplaAdapter
         md = Path("tests/fixtures/zoopla_sample.md").read_text()
         adapter = ZooplaAdapter()
         props = adapter.parse_properties(md, "https://fetch.example")
