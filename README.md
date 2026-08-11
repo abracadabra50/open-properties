@@ -8,6 +8,7 @@
 
 <br>
 
+[![PyPI](https://img.shields.io/pypi/v/open-properties?color=blue)](https://pypi.org/project/open-properties/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Countries](https://img.shields.io/badge/countries-9-2ea44f)](#what-works-where)
 [![Providers](https://img.shields.io/badge/providers-9-2ea44f)](#what-works-where)
@@ -67,7 +68,7 @@ The CLI finds and normalizes listings. Your agent decides what is interesting, w
 ## Install
 
 ```bash
-python3 -m pip install git+https://github.com/abracadabra50/open-properties.git
+python3 -m pip install open-properties
 property providers
 ```
 
