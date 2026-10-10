@@ -1,7 +1,26 @@
 #!/usr/bin/env python3
 import unittest
 
-from dedupe import addresses_match, deduplicate, merge_property_data, properties_match
+from dedupe import (
+    addresses_match, deduplicate, merge_property_data, normalize_address, properties_match,
+)
+
+
+class NormalizeAddressTests(unittest.TestCase):
+    def test_normalizes_case_punctuation_suffixes_and_whitespace(self):
+        self.assertEqual(
+            normalize_address("  12, MAIN. STREET   	Edinburgh  "),
+            "12 main st edinburgh",
+        )
+
+    def test_empty_and_none_addresses_normalize_to_empty_string(self):
+        for address in ("", "   ", None):
+            with self.subTest(address=address):
+                self.assertEqual(normalize_address(address), "")
+
+    def test_non_string_address_raises_attribute_error(self):
+        with self.assertRaises(AttributeError):
+            normalize_address(123)
 
 
 class DedupeRegressionTests(unittest.TestCase):
